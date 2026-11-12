@@ -66,11 +66,11 @@ nav.links a:hover{opacity:1}
 /* ---------- hero ---------- */
 .hero{position:relative;background:#0b1620}
 .hero .stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden}
-.hero .ph{transform:scale(1.06);transition:transform 9s cubic-bezier(.2,.7,.2,1);will-change:transform}
-.hero.done .ph{transform:scale(1)}
-.hero .ph .dirty{will-change:mask-image}
-.hero .ph .dirty::before,.hero .ph .dirty::after{display:none}
-.hero .ph .dirty canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero .wipe{position:absolute;top:0;bottom:0;left:0;width:calc(100% + 140px);overflow:hidden;will-change:transform;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 140px);mask-image:linear-gradient(90deg,transparent 0,#000 140px)}
+.hero .wipe-in{position:absolute;top:0;bottom:0;left:0;will-change:transform}
+.hero .wipe-in canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero .wet{position:absolute;top:0;bottom:0;left:0;width:170px;pointer-events:none;background:linear-gradient(90deg,rgba(225,242,252,0),rgba(225,242,252,.26) 50%,rgba(225,242,252,0))}
 .replay{background:none;border:0;color:rgba(255,255,255,.7);font:500 13px 'Schibsted Grotesk',sans-serif;cursor:pointer;padding:0;margin-top:10px;text-decoration:underline;text-underline-offset:3px}
 .replay:hover{color:#fff}
 .hero .ph{position:absolute;inset:0;--dir:100deg;opacity:0;transition:opacity .5s}
@@ -206,6 +206,7 @@ footer a{color:#C9D4DC}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .hero .ph{opacity:1}
+  .hero .wipe{display:none}
   
   .ph .dirty{display:none}
   .ba .ph .dirty{display:block}
@@ -241,8 +242,7 @@ footer a{color:#C9D4DC}
       <img src="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2200&q=80&auto=format&fit=crop"
            srcset="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=900&q=75&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=1600&q=78&auto=format&fit=crop 1600w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2400&q=80&auto=format&fit=crop 2400w"
            sizes="100vw" alt="White two-story house with dark blue shutters and a front porch" fetchpriority="high">
-      <div class="dirty"><canvas id="heroDirty"></canvas></div>
-      <div class="spray"></div>
+      <div class="wipe" id="wipe"><div class="wipe-in" id="wipeIn"><canvas id="heroDirty"></canvas></div><span class="wet"></span></div>
     </div>
     <div class="shade"></div>
     <canvas class="wand" id="wand" aria-hidden="true"></canvas>
@@ -422,18 +422,18 @@ footer a{color:#C9D4DC}
   const cv = document.getElementById('wand'), cx = cv.getContext('2d');
   let W=0, H=0, drops=[], last=0;
   function size(force){ const nw=cv.clientWidth, nh=cv.clientHeight; if(!force && nw===W && Math.abs(nh-H)<160) return false; const d=Math.min(devicePixelRatio||1,2); W=nw; H=nh; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); return true; }
-  size(true); addEventListener('resize', ()=>{ if(size(false)) bakeHero(); });
-  // x of the wash edge at height y (matches the 100deg mask on the photo)
-  function edgeX(p, y){
-    const sn=Math.sin(100*Math.PI/180), cs=-Math.cos(100*Math.PI/180), L=W*sn+H*Math.abs(cs), f=p*1.4-0.12;
-    return W/2 + ((f-0.5)*L - (y-H/2)*cs)/sn;
-  }
+  const wipe = document.getElementById('wipe'), wipeIn = document.getElementById('wipeIn'), F = 140;
+  function fitWipe(){ wipeIn.style.width = ph.clientWidth+'px'; }
+  size(true); fitWipe(); addEventListener('resize', ()=>{ fitWipe(); size(false); });
+  // the dirty layer slides off to the right; the wash edge is a soft vertical band
+  const edge = p => p*(W+F) - F;
+  function edgeX(p){ return edge(p) + F*0.5; }
   function drawWand(p, t){
     cx.clearRect(0,0,W,H);
     const on = p>0.005 && p<0.995;
     if(on){
       const sweep = 0.5+0.5*Math.sin(t/260);
-      const iy = H*(0.14 + 0.36*sweep), ix = edgeX(p, iy);
+      const iy = H*(0.14 + 0.36*sweep), ix = edgeX(p);
       const scale = Math.max(0.6, Math.min(1.15, W/1400));
       const tx = ix + 150*scale, ty = iy + 105*scale;          // nozzle tip
       const ang = Math.atan2(ty-iy, tx-ix);                      // spray direction (tip -> wall)
@@ -468,9 +468,9 @@ footer a{color:#C9D4DC}
     return on || drops.length>0;
   }
   function render(p){
-    ph.style.setProperty('--p', p); meter.style.setProperty('--p', p);
+    const e = edge(p); wipe.style.transform = `translate3d(${e}px,0,0)`; wipeIn.style.transform = `translate3d(${-e}px,0,0)`;
+    meter.style.setProperty('--p', p);
     drawWand(p, performance.now());
-    ph.style.setProperty('--sprayop', p>0.01 && p<0.99 ? 1 : 0);
     pct.textContent = Math.round(p*100)+'%';
     tagB.style.opacity = p<0.12 ? 1 : 0; tagA.style.opacity = p>0.95 ? 1 : 0;
   }
@@ -486,18 +486,15 @@ footer a{color:#C9D4DC}
   let tex = null;
   function bakeHero(){
     if(!heroImg.naturalWidth) return;
-    const d=Math.min(devicePixelRatio||1,2), w=ph.clientWidth, h=ph.clientHeight;
-    dc.width=Math.round(w*d); dc.height=Math.round(h*d);
-    const g=dc.getContext('2d'); g.setTransform(d,0,0,d,0,0);
-    // same crop as object-fit:cover; object-position:center 40%
-    const ir=heroImg.naturalWidth/heroImg.naturalHeight, br=w/h; let sw,sh,sx,sy;
-    if(ir>br){ sh=heroImg.naturalHeight; sw=sh*br; sx=(heroImg.naturalWidth-sw)/2; sy=0; } else { sw=heroImg.naturalWidth; sh=sw/br; sx=0; sy=(heroImg.naturalHeight-sh)*0.4; }
+    const k = Math.min(1, 2400/heroImg.naturalWidth), w = Math.round(heroImg.naturalWidth*k), h = Math.round(heroImg.naturalHeight*k);
+    dc.width=w; dc.height=h;
+    const g=dc.getContext('2d');
     g.filter='sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)';
-    g.drawImage(heroImg,sx,sy,sw,sh,0,0,w,h); g.filter='none';
+    g.drawImage(heroImg,0,0,w,h); g.filter='none';
     if(tex){
       g.globalCompositeOperation='multiply';
       if(tex.g){ g.globalAlpha=.95; g.fillStyle=g.createPattern(tex.g.canvas,'repeat'); g.fillRect(0,0,w,h); }
-      if(tex.st){ const grad=g.createLinearGradient(0,0,0,h); g.globalAlpha=.55; g.fillStyle=g.createPattern(tex.st.canvas,'repeat'); g.fillRect(0,0,w,h*.75); g.globalAlpha=.3; g.fillRect(0,h*.75,w,h*.25); }
+      if(tex.st){ g.globalAlpha=.55; g.fillStyle=g.createPattern(tex.st.canvas,'repeat'); g.fillRect(0,0,w,h*.75); g.globalAlpha=.3; g.fillRect(0,h*.75,w,h*.25); }
       g.globalAlpha=1; g.globalCompositeOperation='source-over';
     }
   }
