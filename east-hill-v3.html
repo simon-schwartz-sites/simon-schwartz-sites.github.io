@@ -138,6 +138,8 @@ nav.links a:hover{opacity:1}
 .card .wipe-in{position:absolute;left:0;right:0;top:0;will-change:transform}
 .card .wipe canvas,.ba .dirty canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .card .wipe.gone{display:none}
+.card .ph > img,.ba .ph > img{opacity:0}
+.card .ph.ready > img,.ba .ph.ready > img{opacity:1}
 .ba .ph .dirty::before,.ba .ph .dirty::after{display:none}
 .card h3{margin-top:18px;font-size:22px;letter-spacing:-.02em;font-weight:600;line-height:1.2}
 .card p{margin-top:6px;color:var(--ink-2);max-width:40ch}
@@ -213,6 +215,7 @@ footer a{color:#C9D4DC}
   .hero .wipe{display:none}
   
   .ph .dirty,.card .wipe{display:none}
+  .card .ph > img,.ba .ph > img{opacity:1}
   .ba .ph .dirty{display:block}
   .rv{opacity:1;transform:none;transition:none}
   
@@ -417,7 +420,7 @@ footer a{color:#C9D4DC}
 
   /* services: card grid; each photo washes once (top to bottom) when it scrolls into view */
   const cards = document.getElementById('svcCards');
-  cards.innerHTML = SERVICES.map(s=>`<article class="card"><div class="ph"><img src="${img(s.id,1100)}" alt="${s.t}" loading="lazy"><div class="wipe"><div class="wipe-in"><canvas></canvas></div></div></div><h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
+  cards.innerHTML = SERVICES.map(s=>`<article class="card"><div class="ph"><img src="${img(s.id,1100)}" alt="${s.t}"><div class="wipe"><div class="wipe-in"><canvas></canvas></div></div></div><h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
   const FV = 120;
   function setWipe(ph, p){
     const wipe=ph.querySelector('.wipe'), inn=ph.querySelector('.wipe-in'), h=ph.clientHeight, e=p*(h+FV)-FV;
@@ -431,17 +434,22 @@ footer a{color:#C9D4DC}
     const start=performance.now();
     (function f(t){ const k=Math.min(1,(t-start)/dur), e=1-Math.pow(1-k,3); setWipe(ph,e); if(k<1) requestAnimationFrame(f); })(start);
   }
-  function prepCard(ph){ const im=ph.querySelector(':scope > img'), cv=ph.querySelector('canvas');
-    return Promise.all([whenLoaded(im), texReady]).then(([,t])=>{ if(!bakeDirty(im,cv,t)) setWipe(ph,1); }); }
+  const prepared = new Map();
+  function prepCard(ph){
+    if(!prepared.has(ph)){ const im=ph.querySelector(':scope > img'), cv=ph.querySelector('canvas');
+      prepared.set(ph, Promise.all([whenLoaded(im), texReady]).then(([,t])=>{ if(!bakeDirty(im,cv,t)) setWipe(ph,1); ph.classList.add('ready'); })); }
+    return prepared.get(ph);
+  }
+  cards.querySelectorAll('.ph').forEach(ph=>{ ph.querySelector(':scope > img').loading='eager'; prepCard(ph); });
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); prepCard(e.target).then(()=>setTimeout(()=>wash(e.target,1700),120)); } }),{threshold:.6});
     cards.querySelectorAll('.ph').forEach(el=>io.observe(el));
     const rio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rio.unobserve(e.target);} }),{threshold:.15});
     document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
-  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>setWipe(el,1)); }
+  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>{ setWipe(el,1); el.classList.add('ready'); }); }
   // before/after: grimy side painted once too
   const baPh = document.querySelector('.ba .ph');
-  Promise.all([whenLoaded(baPh.querySelector(':scope > img')), texReady]).then(([,t])=>bakeDirty(baPh.querySelector(':scope > img'), document.getElementById('baDirty'), t));
+  Promise.all([whenLoaded(baPh.querySelector(':scope > img')), texReady]).then(([,t])=>{ bakeDirty(baPh.querySelector(':scope > img'), document.getElementById('baDirty'), t); baPh.classList.add('ready'); });
   addEventListener('resize', ()=>cards.querySelectorAll('.ph').forEach(ph=>{ const w=ph.querySelector('.wipe'); if(!w.classList.contains('gone')) setWipe(ph,0); }));
 
   /* hero: washes itself once the photo has loaded */
