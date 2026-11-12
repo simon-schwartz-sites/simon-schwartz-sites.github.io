@@ -47,7 +47,7 @@ a{color:inherit}
 .ph .dirty::before{content:"";position:absolute;inset:0;background:var(--grime);background-size:600px;mix-blend-mode:multiply;opacity:.95}
 .ph .dirty::after{content:"";position:absolute;inset:0;background:var(--streaks);background-size:700px 1100px;mix-blend-mode:multiply;opacity:.55;-webkit-mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35));mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35))}
 .ph .spray{position:absolute;top:-10%;bottom:-10%;width:22%;left:calc(var(--p,0)*140% - 26%);pointer-events:none;
-  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(235,248,255,.55) 55%,rgba(255,255,255,0));filter:blur(14px);transform:skewX(-10deg);opacity:var(--sprayop,0);transition:opacity .4s}
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(235,248,255,.32) 40%,rgba(235,248,255,.5) 58%,rgba(255,255,255,0));transform:skewX(-10deg);opacity:var(--sprayop,0);transition:opacity .4s}
 
 /* ---------- header ---------- */
 header.site{position:absolute;left:0;right:0;z-index:20;color:#fff}
@@ -66,11 +66,14 @@ nav.links a:hover{opacity:1}
 /* ---------- hero ---------- */
 .hero{position:relative;background:#0b1620}
 .hero .stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden}
-.hero .ph img{transform:scale(1.07);transition:transform 9s cubic-bezier(.2,.7,.2,1)}
-.hero.done .ph img{transform:scale(1)}
+.hero .ph{transform:scale(1.06);transition:transform 9s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.hero.done .ph{transform:scale(1)}
+.hero .ph .dirty{will-change:mask-image}
+.hero .ph .dirty::before,.hero .ph .dirty::after{display:none}
+.hero .ph .dirty canvas{position:absolute;inset:0;width:100%;height:100%}
 .replay{background:none;border:0;color:rgba(255,255,255,.7);font:500 13px 'Schibsted Grotesk',sans-serif;cursor:pointer;padding:0;margin-top:10px;text-decoration:underline;text-underline-offset:3px}
 .replay:hover{color:#fff}
-.hero .ph{position:absolute;inset:0;--dir:100deg}
+.hero .ph{position:absolute;inset:0;--dir:100deg;opacity:0;transition:opacity .5s}
 .hero .ph img{object-position:center 40%}
 .hero .shade{position:absolute;inset:0;background:
   linear-gradient(180deg,rgba(11,22,32,.55) 0%,rgba(11,22,32,0) 26%),
@@ -202,6 +205,7 @@ footer a{color:#C9D4DC}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
+  .hero .ph{opacity:1}
   
   .ph .dirty{display:none}
   .ba .ph .dirty{display:block}
@@ -237,9 +241,7 @@ footer a{color:#C9D4DC}
       <img src="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2200&q=80&auto=format&fit=crop"
            srcset="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=900&q=75&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=1600&q=78&auto=format&fit=crop 1600w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2400&q=80&auto=format&fit=crop 2400w"
            sizes="100vw" alt="White two-story house with dark blue shutters and a front porch" fetchpriority="high">
-      <div class="dirty"><img src="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2200&q=80&auto=format&fit=crop"
-           srcset="https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=900&q=75&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=1600&q=78&auto=format&fit=crop 1600w, https://images.unsplash.com/photo-1743351482246-7a06419e8b6c?w=2400&q=80&auto=format&fit=crop 2400w"
-           sizes="100vw" alt=""></div>
+      <div class="dirty"><canvas id="heroDirty"></canvas></div>
       <div class="spray"></div>
     </div>
     <div class="shade"></div>
@@ -387,6 +389,14 @@ footer a{color:#C9D4DC}
     { t:'Commercial', d:'Storefronts, sidewalks and building exteriors.', id:'photo-1677956787377-a0f32c0974af' }
   ];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // turn the SVG noise textures into plain bitmaps once (SVG filters are expensive to repaint while scrolling)
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim().replace(/^url\(["']?/,'').replace(/["']?\)$/,'');
+  function toBitmap(src, w, h){ return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(im,0,0,w,h); try{ res({canvas:c,url:c.toDataURL('image/png')}); }catch(e){ res({canvas:c,url:null}); } }; im.onerror=()=>res(null); im.src=src; }); }
+  const texReady = Promise.all([toBitmap(cssVar('--grime'),600,600), toBitmap(cssVar('--streaks'),700,1100)]).then(([g,st])=>{
+    if(g && g.url) document.documentElement.style.setProperty('--grime',`url(${g.url})`);
+    if(st && st.url) document.documentElement.style.setProperty('--streaks',`url(${st.url})`);
+    return {g, st};
+  });
   const phHTML = (s, w, cls) => `<div class="ph ${cls||''}"><img src="${img(s.id,w)}" alt="${s.t}" loading="lazy"><div class="dirty"><img src="${img(s.id,w)}" alt="" loading="lazy"></div></div>`;
 
   /* services: card grid; each photo washes once when it scrolls into view */
@@ -411,8 +421,8 @@ footer a{color:#C9D4DC}
   let raf = null;
   const cv = document.getElementById('wand'), cx = cv.getContext('2d');
   let W=0, H=0, drops=[], last=0;
-  function size(){ const d=Math.min(devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); }
-  size(); addEventListener('resize', size);
+  function size(force){ const nw=cv.clientWidth, nh=cv.clientHeight; if(!force && nw===W && Math.abs(nh-H)<160) return false; const d=Math.min(devicePixelRatio||1,2); W=nw; H=nh; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); return true; }
+  size(true); addEventListener('resize', ()=>{ if(size(false)) bakeHero(); });
   // x of the wash edge at height y (matches the 100deg mask on the photo)
   function edgeX(p, y){
     const sn=Math.sin(100*Math.PI/180), cs=-Math.cos(100*Math.PI/180), L=W*sn+H*Math.abs(cs), f=p*1.4-0.12;
@@ -431,7 +441,8 @@ footer a{color:#C9D4DC}
       const fan = 0.3, len = Math.hypot(tx-ix, ty-iy) + 18;
       const g = cx.createLinearGradient(tx,ty,ix,iy);
       g.addColorStop(0,'rgba(255,255,255,.95)'); g.addColorStop(.55,'rgba(235,247,255,.55)'); g.addColorStop(1,'rgba(235,247,255,0)');
-      cx.save(); cx.shadowColor='rgba(255,255,255,.8)'; cx.shadowBlur=18; cx.translate(tx,ty); cx.rotate(ang+Math.PI);
+      cx.save(); cx.translate(tx,ty); cx.rotate(ang+Math.PI);
+      cx.fillStyle='rgba(235,247,255,.16)'; cx.beginPath(); cx.moveTo(0,-6*scale); cx.lineTo(len*1.05, -len*Math.tan(fan*1.5)); cx.lineTo(len*1.05, len*Math.tan(fan*1.5)); cx.lineTo(0,6*scale); cx.closePath(); cx.fill();
       cx.fillStyle=g; cx.beginPath(); cx.moveTo(0,-2*scale); cx.lineTo(len, -len*Math.tan(fan)); cx.lineTo(len, len*Math.tan(fan)); cx.lineTo(0,2*scale); cx.closePath(); cx.fill();
       cx.strokeStyle='rgba(255,255,255,.5)'; cx.lineWidth=1;
       for(let i=-3;i<=3;i++){ cx.beginPath(); cx.moveTo(4,0); cx.lineTo(len*0.92, len*Math.tan(fan)*i/3.4 + Math.sin(t/40+i)*3); cx.stroke(); }
@@ -464,15 +475,34 @@ footer a{color:#C9D4DC}
     tagB.style.opacity = p<0.12 ? 1 : 0; tagA.style.opacity = p>0.95 ? 1 : 0;
   }
   function play(delay){
-    cancelAnimationFrame(raf); hero.classList.remove('done'); render(0);
+    cancelAnimationFrame(raf); hero.classList.remove('done'); render(0); ph.style.opacity=1;
     if(reduce){ render(1); hero.classList.add('done'); return; }
     setTimeout(()=>{
       const start=performance.now(), dur=6200;
       (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(e); if(k<1) raf=requestAnimationFrame(f); else { hero.classList.add('done'); (function settle(){ if(drawWand(1, performance.now())) raf=requestAnimationFrame(settle); })(); } })(start);
     }, delay);
   }
-  const heroImg = ph.querySelector(':scope > img');
-  if(heroImg.complete) play(700); else { heroImg.addEventListener('load',()=>play(700),{once:true}); heroImg.addEventListener('error',()=>render(1),{once:true}); }
+  const heroImg = ph.querySelector(':scope > img'), dc = document.getElementById('heroDirty');
+  let tex = null;
+  function bakeHero(){
+    if(!heroImg.naturalWidth) return;
+    const d=Math.min(devicePixelRatio||1,2), w=ph.clientWidth, h=ph.clientHeight;
+    dc.width=Math.round(w*d); dc.height=Math.round(h*d);
+    const g=dc.getContext('2d'); g.setTransform(d,0,0,d,0,0);
+    // same crop as object-fit:cover; object-position:center 40%
+    const ir=heroImg.naturalWidth/heroImg.naturalHeight, br=w/h; let sw,sh,sx,sy;
+    if(ir>br){ sh=heroImg.naturalHeight; sw=sh*br; sx=(heroImg.naturalWidth-sw)/2; sy=0; } else { sw=heroImg.naturalWidth; sh=sw/br; sx=0; sy=(heroImg.naturalHeight-sh)*0.4; }
+    g.filter='sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)';
+    g.drawImage(heroImg,sx,sy,sw,sh,0,0,w,h); g.filter='none';
+    if(tex){
+      g.globalCompositeOperation='multiply';
+      if(tex.g){ g.globalAlpha=.95; g.fillStyle=g.createPattern(tex.g.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      if(tex.st){ const grad=g.createLinearGradient(0,0,0,h); g.globalAlpha=.55; g.fillStyle=g.createPattern(tex.st.canvas,'repeat'); g.fillRect(0,0,w,h*.75); g.globalAlpha=.3; g.fillRect(0,h*.75,w,h*.25); }
+      g.globalAlpha=1; g.globalCompositeOperation='source-over';
+    }
+  }
+  function start(){ texReady.then(t=>{ tex=t; bakeHero(); play(500); }); }
+  if(heroImg.complete && heroImg.naturalWidth) start(); else { heroImg.addEventListener('load',start,{once:true}); heroImg.addEventListener('error',()=>render(1),{once:true}); }
   document.getElementById('replay').addEventListener('click',()=>play(150));
 
   /* before/after */
