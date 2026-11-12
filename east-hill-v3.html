@@ -133,8 +133,12 @@ nav.links a:hover{opacity:1}
 @media (max-width:980px){.svc-cards{grid-template-columns:1fr 1fr}}
 @media (max-width:600px){.svc-cards{grid-template-columns:1fr;gap:30px}}
 .card .ph{aspect-ratio:4/3;border-radius:var(--radius);--dir:180deg}
-.card .ph img{transition:transform .8s cubic-bezier(.2,.7,.2,1)}
-.card:hover .ph img{transform:scale(1.04)}
+.card .wipe{position:absolute;left:0;right:0;top:0;height:calc(100% + 120px);overflow:hidden;will-change:transform;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 120px);mask-image:linear-gradient(180deg,transparent 0,#000 120px)}
+.card .wipe-in{position:absolute;left:0;right:0;top:0;will-change:transform}
+.card .wipe canvas,.ba .dirty canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card .wipe.gone{display:none}
+.ba .ph .dirty::before,.ba .ph .dirty::after{display:none}
 .card h3{margin-top:18px;font-size:22px;letter-spacing:-.02em;font-weight:600;line-height:1.2}
 .card p{margin-top:6px;color:var(--ink-2);max-width:40ch}
 
@@ -208,7 +212,7 @@ footer a{color:#C9D4DC}
   .hero .ph{opacity:1}
   .hero .wipe{display:none}
   
-  .ph .dirty{display:none}
+  .ph .dirty,.card .wipe{display:none}
   .ba .ph .dirty{display:block}
   .rv{opacity:1;transform:none;transition:none}
   
@@ -309,7 +313,7 @@ footer a{color:#C9D4DC}
     <div class="ba rv" id="ba">
       <div class="ph">
         <img src="https://images.unsplash.com/photo-1781637202423-33ec5b47e52e?w=2000&q=80&auto=format&fit=crop" alt="Clean concrete driveway in front of a white garage door" loading="lazy">
-        <div class="dirty"><img src="https://images.unsplash.com/photo-1781637202423-33ec5b47e52e?w=2000&q=80&auto=format&fit=crop" alt="" loading="lazy"></div>
+        <div class="dirty"><canvas id="baDirty"></canvas></div>
       </div>
       <span class="t l">Before</span><span class="t r">After</span>
       <div class="line"><div class="knob"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F1B26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></div></div>
@@ -397,22 +401,48 @@ footer a{color:#C9D4DC}
     if(st && st.url) document.documentElement.style.setProperty('--streaks',`url(${st.url})`);
     return {g, st};
   });
-  const phHTML = (s, w, cls) => `<div class="ph ${cls||''}"><img src="${img(s.id,w)}" alt="${s.t}" loading="lazy"><div class="dirty"><img src="${img(s.id,w)}" alt="" loading="lazy"></div></div>`;
-
-  /* services: card grid; each photo washes once when it scrolls into view */
-  function wash(el, dur){
-    if(reduce){ el.style.setProperty('--p',1); return; }
-    const start = performance.now(); el.style.setProperty('--p',0);
-    (function f(t){ const k=Math.min(1,(t-start)/dur); const e=1-Math.pow(1-k,3); el.style.setProperty('--p',e); if(k<1) requestAnimationFrame(f); })(start);
+  // paint a grimy copy of a photo into a canvas once (filters + texture), sized to the photo's own aspect
+  function bakeDirty(imgEl, canvas, t){
+    if(!imgEl.naturalWidth) return false;
+    const k=Math.min(1, 1800/imgEl.naturalWidth), w=Math.round(imgEl.naturalWidth*k), h=Math.round(imgEl.naturalHeight*k);
+    canvas.width=w; canvas.height=h; const g=canvas.getContext('2d');
+    g.filter='sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)'; g.drawImage(imgEl,0,0,w,h); g.filter='none';
+    if(t){ g.globalCompositeOperation='multiply';
+      if(t.g){ g.globalAlpha=.95; g.fillStyle=g.createPattern(t.g.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      if(t.st){ g.globalAlpha=.5; g.fillStyle=g.createPattern(t.st.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      g.globalAlpha=1; g.globalCompositeOperation='source-over'; }
+    return true;
   }
+  const whenLoaded = im => im.complete && im.naturalWidth ? Promise.resolve() : new Promise(r=>{ im.addEventListener('load',r,{once:true}); im.addEventListener('error',r,{once:true}); });
+
+  /* services: card grid; each photo washes once (top to bottom) when it scrolls into view */
   const cards = document.getElementById('svcCards');
-  cards.innerHTML = SERVICES.map(s=>`<article class="card">${phHTML(s,1100)}<h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
+  cards.innerHTML = SERVICES.map(s=>`<article class="card"><div class="ph"><img src="${img(s.id,1100)}" alt="${s.t}" loading="lazy"><div class="wipe"><div class="wipe-in"><canvas></canvas></div></div></div><h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
+  const FV = 120;
+  function setWipe(ph, p){
+    const wipe=ph.querySelector('.wipe'), inn=ph.querySelector('.wipe-in'), h=ph.clientHeight, e=p*(h+FV)-FV;
+    inn.style.height=h+'px';
+    wipe.style.transform=`translate3d(0,${e}px,0)`; inn.style.transform=`translate3d(0,${-e}px,0)`;
+    if(p>=1) wipe.classList.add('gone');
+  }
+  cards.querySelectorAll('.ph').forEach(ph=>setWipe(ph,0));
+  function wash(ph, dur){
+    if(reduce){ setWipe(ph,1); return; }
+    const start=performance.now();
+    (function f(t){ const k=Math.min(1,(t-start)/dur), e=1-Math.pow(1-k,3); setWipe(ph,e); if(k<1) requestAnimationFrame(f); })(start);
+  }
+  function prepCard(ph){ const im=ph.querySelector(':scope > img'), cv=ph.querySelector('canvas');
+    return Promise.all([whenLoaded(im), texReady]).then(([,t])=>{ if(!bakeDirty(im,cv,t)) setWipe(ph,1); }); }
   if('IntersectionObserver' in window){
-    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ setTimeout(()=>wash(e.target,1800), 150); io.unobserve(e.target);} }),{threshold:.6});
+    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); prepCard(e.target).then(()=>setTimeout(()=>wash(e.target,1700),120)); } }),{threshold:.6});
     cards.querySelectorAll('.ph').forEach(el=>io.observe(el));
     const rio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rio.unobserve(e.target);} }),{threshold:.15});
     document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
-  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>el.style.setProperty('--p',1)); }
+  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>setWipe(el,1)); }
+  // before/after: grimy side painted once too
+  const baPh = document.querySelector('.ba .ph');
+  Promise.all([whenLoaded(baPh.querySelector(':scope > img')), texReady]).then(([,t])=>bakeDirty(baPh.querySelector(':scope > img'), document.getElementById('baDirty'), t));
+  addEventListener('resize', ()=>cards.querySelectorAll('.ph').forEach(ph=>{ const w=ph.querySelector('.wipe'); if(!w.classList.contains('gone')) setWipe(ph,0); }));
 
   /* hero: washes itself once the photo has loaded */
   const hero = document.getElementById('hero'), ph = document.getElementById('heroPh');
