@@ -64,8 +64,12 @@ nav.links a:hover{opacity:1}
 @media (max-width:560px){header.site .pill{display:none}}
 
 /* ---------- hero ---------- */
-.hero{position:relative;height:200vh;background:#0b1620}
-.hero .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.hero{position:relative;background:#0b1620}
+.hero .stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden}
+.hero .ph img{transform:scale(1.07);transition:transform 9s cubic-bezier(.2,.7,.2,1)}
+.hero.done .ph img{transform:scale(1)}
+.replay{background:none;border:0;color:rgba(255,255,255,.7);font:500 13px 'Schibsted Grotesk',sans-serif;cursor:pointer;padding:0;margin-top:10px;text-decoration:underline;text-underline-offset:3px}
+.replay:hover{color:#fff}
 .hero .ph{position:absolute;inset:0;--dir:100deg}
 .hero .ph img{object-position:center 40%}
 .hero .shade{position:absolute;inset:0;background:
@@ -97,7 +101,7 @@ nav.links a:hover{opacity:1}
 @media (max-width:640px){.tag{top:84px}.tag.b{left:18px}.tag.a{right:18px}}
 
 /* ---------- statement ---------- */
-.statement{padding:120px 0 96px}
+.statement{padding:120px 0 64px}
 .statement p.big{font-size:clamp(28px,3.6vw,50px);line-height:1.14;letter-spacing:-.03em;font-weight:500;max-width:23ch}
 .statement p.big span{color:var(--muted)}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:72px;border-top:1px solid var(--line);padding-top:28px}
@@ -105,6 +109,16 @@ nav.links a:hover{opacity:1}
 .facts b{display:block;font-size:19px;font-weight:700;letter-spacing:-.01em}
 .facts span{display:block;color:var(--muted);font-size:15px;margin-top:4px}
 @media (max-width:640px){.statement{padding:76px 0 64px}.facts{margin-top:48px}}
+
+/* ---------- steps ---------- */
+.steps{padding:0 0 110px}
+.step-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:860px){.step-list{grid-template-columns:1fr;gap:12px}}
+.step-list li{background:var(--mist);border-radius:var(--radius);padding:28px 26px 30px}
+.step-list .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:15px}
+.step-list h3{margin-top:22px;font-size:22px;letter-spacing:-.02em;font-weight:600}
+.step-list p{margin-top:6px;color:var(--ink-2)}
+@media (max-width:640px){.steps{padding:0 0 76px}}
 
 /* ---------- services ---------- */
 .services{padding:24px 0 120px}
@@ -198,7 +212,7 @@ footer a{color:#C9D4DC}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .hero{height:auto}.hero .stage{position:relative}
+  
   .ph .dirty{display:none}
   .ba .ph .dirty{display:block}
   .rv{opacity:1;transform:none;transition:none}
@@ -254,7 +268,7 @@ footer a{color:#C9D4DC}
         <div class="meter" aria-hidden="true">
           <div class="row"><span>Washing</span><span id="pct">0%</span></div>
           <div class="bar"><i></i></div>
-          <small>Scroll to wash</small>
+          <button class="replay" id="replay" type="button">Wash it again</button>
         </div>
       </div>
     </div>
@@ -273,11 +287,21 @@ footer a{color:#C9D4DC}
   </div>
 </section>
 
+<section class="steps">
+  <div class="wrap">
+    <ol class="step-list rv">
+      <li><span class="n">1</span><h3>Text us a photo</h3><p>Snap the house, deck or driveway and send it to 615.975.3323.</p></li>
+      <li><span class="n">2</span><h3>Get a free estimate</h3><p>We look it over and send you a price.</p></li>
+      <li><span class="n">3</span><h3>Get on the schedule</h3><p>We show up, soft wash it, and leave it clean.</p></li>
+    </ol>
+  </div>
+</section>
+
 <section class="services" id="services">
   <div class="wrap">
     <div class="sec-head rv">
       <h2 class="h2">What we wash</h2>
-      <p>Residential and commercial. Hover a service to see it cleaned.</p>
+      <p>Residential and commercial, anywhere in Middle Tennessee.</p>
     </div>
     <div class="svc-grid">
       <div class="svc-photo" id="svcPhoto" aria-hidden="true"></div>
@@ -384,7 +408,8 @@ footer a{color:#C9D4DC}
   const bigs = [...photo.querySelectorAll(':scope > .ph')], items = [...list.children], cap = document.getElementById('svcCap');
   let active = -1;
   function wash(el, dur){
-    if(reduce){ el.style.setProperty('--p',1); return; }
+    if(reduce || el.dataset.washed){ el.style.setProperty('--p',1); return; }
+    el.dataset.washed = 1;
     const start = performance.now(); el.style.setProperty('--p',0);
     (function f(t){ const k=Math.min(1,(t-start)/dur); const e=1-Math.pow(1-k,3); el.style.setProperty('--p',e); if(k<1) requestAnimationFrame(f); })(start);
   }
@@ -408,31 +433,28 @@ footer a{color:#C9D4DC}
     document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
   } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); }
 
-  /* hero: scroll-scrubbed wash with auto-play fallback */
+  /* hero: washes itself once the photo has loaded */
   const hero = document.getElementById('hero'), ph = document.getElementById('heroPh');
   const pct = document.getElementById('pct'), meter = document.querySelector('.meter');
   const tagB = document.getElementById('tagB'), tagA = document.getElementById('tagA');
-  let p = 0, auto = null, userScrolled = false;
-  function render(v){
-    p = Math.max(0, Math.min(1, v));
+  let raf = null;
+  function render(p){
     ph.style.setProperty('--p', p); meter.style.setProperty('--p', p);
     ph.style.setProperty('--sprayop', p>0.01 && p<0.99 ? 1 : 0);
     pct.textContent = Math.round(p*100)+'%';
-    tagB.style.opacity = p<0.15 ? 1 : 0; tagA.style.opacity = p>0.9 ? 1 : 0;
+    tagB.style.opacity = p<0.12 ? 1 : 0; tagA.style.opacity = p>0.95 ? 1 : 0;
   }
-  function fromScroll(){
-    const r = hero.getBoundingClientRect(), range = hero.offsetHeight - innerHeight;
-    return range>0 ? (-r.top)/(range*0.85) : 1;
+  function play(delay){
+    cancelAnimationFrame(raf); hero.classList.remove('done'); render(0);
+    if(reduce){ render(1); hero.classList.add('done'); return; }
+    setTimeout(()=>{
+      const start=performance.now(), dur=3600;
+      (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(e); if(k<1) raf=requestAnimationFrame(f); else hero.classList.add('done'); })(start);
+    }, delay);
   }
-  if(reduce){ render(1); }
-  else{
-    render(0);
-    addEventListener('scroll',()=>{ userScrolled = true; if(auto){ cancelAnimationFrame(auto); auto=null; } const v=fromScroll(); if(v>p || v<0.02) render(v); },{passive:true});
-    setTimeout(()=>{ if(userScrolled || scrollY>10) return;
-      const start=performance.now(), from=p, dur=4200;
-      (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(from+(1-from)*e); if(k<1 && !userScrolled) auto=requestAnimationFrame(f); })(start);
-    }, 1200);
-  }
+  const heroImg = ph.querySelector(':scope > img');
+  if(heroImg.complete) play(700); else { heroImg.addEventListener('load',()=>play(700),{once:true}); heroImg.addEventListener('error',()=>render(1),{once:true}); }
+  document.getElementById('replay').addEventListener('click',()=>play(150));
 
   /* before/after */
   const ba=document.getElementById('ba'), r=ba.querySelector('input');
