@@ -75,6 +75,7 @@ nav.links a:hover{opacity:1}
 .hero .shade{position:absolute;inset:0;background:
   linear-gradient(180deg,rgba(11,22,32,.55) 0%,rgba(11,22,32,0) 26%),
   linear-gradient(0deg,rgba(11,22,32,.88) 0%,rgba(11,22,32,.35) 42%,rgba(11,22,32,0) 64%)}
+.hero .wand{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
 .hero .copy{position:absolute;left:0;right:0;bottom:0;color:#fff;z-index:5}
 .hero .copy .wrap{padding-bottom:56px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
 @media (max-width:860px){.hero .copy .wrap{grid-template-columns:1fr;padding-bottom:34px;gap:22px}}
@@ -125,25 +126,14 @@ nav.links a:hover{opacity:1}
 .sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
 .h2{font-size:clamp(34px,4.4vw,60px);line-height:1;letter-spacing:-.04em;font-weight:700}
 .sec-head p{color:var(--muted);max-width:36ch}
-.svc-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:64px;margin-top:56px;align-items:start}
-@media (max-width:900px){.svc-grid{grid-template-columns:1fr;gap:0}}
-.svc-photo{position:sticky;top:28px;aspect-ratio:4/5;border-radius:var(--radius)}
-.svc-photo .ph{position:absolute;inset:0;opacity:0;transition:opacity .5s;--dir:180deg}
-.svc-photo .ph.on{opacity:1}
-.svc-photo .cap{position:absolute;left:16px;bottom:16px;z-index:3;font-size:13px;font-weight:600;color:#fff;background:rgba(11,22,32,.55);backdrop-filter:blur(6px);padding:6px 12px;border-radius:999px}
-@media (max-width:900px){.svc-photo{display:none}}
-.svc-list{list-style:none;padding:0;border-top:1px solid var(--line)}
-.svc-list li{border-bottom:1px solid var(--line);padding:30px 0;cursor:default;transition:padding .3s}
-.svc-list h3{font-size:clamp(24px,2.4vw,32px);letter-spacing:-.03em;font-weight:600;line-height:1.1;color:var(--muted);transition:color .3s}
-.svc-list p{margin-top:10px;color:var(--ink-2);max-width:42ch;max-height:0;opacity:0;overflow:hidden;transition:max-height .45s,opacity .45s}
-.svc-list li.on h3{color:var(--ink)}
-.svc-list li.on p{max-height:120px;opacity:1}
-.svc-list .mini{display:none}
-@media (max-width:900px){
-  .svc-list h3{color:var(--ink)}
-  .svc-list p{max-height:none;opacity:1}
-  .svc-list .mini{display:block;position:relative;aspect-ratio:16/10;border-radius:14px;margin-top:18px;--dir:180deg}
-}
+.svc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 22px;margin-top:52px}
+@media (max-width:980px){.svc-cards{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.svc-cards{grid-template-columns:1fr;gap:30px}}
+.card .ph{aspect-ratio:4/3;border-radius:var(--radius);--dir:180deg}
+.card .ph img{transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img{transform:scale(1.04)}
+.card h3{margin-top:18px;font-size:22px;letter-spacing:-.02em;font-weight:600;line-height:1.2}
+.card p{margin-top:6px;color:var(--ink-2);max-width:40ch}
 
 /* ---------- before / after ---------- */
 .ba-sec{background:var(--mist);padding:120px 0}
@@ -216,7 +206,7 @@ footer a{color:#C9D4DC}
   .ph .dirty{display:none}
   .ba .ph .dirty{display:block}
   .rv{opacity:1;transform:none;transition:none}
-  .svc-list p,.svc-photo .ph{transition:none}
+  
 }
 </style>
 </head>
@@ -253,6 +243,7 @@ footer a{color:#C9D4DC}
       <div class="spray"></div>
     </div>
     <div class="shade"></div>
+    <canvas class="wand" id="wand" aria-hidden="true"></canvas>
     <span class="tag b" id="tagB">Before</span>
     <span class="tag a" id="tagA" style="opacity:0">After</span>
     <div class="copy">
@@ -303,10 +294,7 @@ footer a{color:#C9D4DC}
       <h2 class="h2">What we wash</h2>
       <p>Residential and commercial, anywhere in Middle Tennessee.</p>
     </div>
-    <div class="svc-grid">
-      <div class="svc-photo" id="svcPhoto" aria-hidden="true"></div>
-      <ul class="svc-list" id="svcList"></ul>
-    </div>
+    <div class="svc-cards" id="svcCards"></div>
   </div>
 </section>
 
@@ -401,45 +389,76 @@ footer a{color:#C9D4DC}
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const phHTML = (s, w, cls) => `<div class="ph ${cls||''}"><img src="${img(s.id,w)}" alt="${s.t}" loading="lazy"><div class="dirty"><img src="${img(s.id,w)}" alt="" loading="lazy"></div></div>`;
 
-  /* services */
-  const list = document.getElementById('svcList'), photo = document.getElementById('svcPhoto');
-  list.innerHTML = SERVICES.map((s,i)=>`<li data-i="${i}"><h3>${s.t}</h3><p>${s.d}</p><div class="mini">${phHTML(s,1000)}</div></li>`).join('');
-  photo.innerHTML = SERVICES.map((s,i)=>phHTML(s,1200)).join('') + '<span class="cap" id="svcCap"></span>';
-  const bigs = [...photo.querySelectorAll(':scope > .ph')], items = [...list.children], cap = document.getElementById('svcCap');
-  let active = -1;
+  /* services: card grid; each photo washes once when it scrolls into view */
   function wash(el, dur){
-    if(reduce || el.dataset.washed){ el.style.setProperty('--p',1); return; }
-    el.dataset.washed = 1;
+    if(reduce){ el.style.setProperty('--p',1); return; }
     const start = performance.now(); el.style.setProperty('--p',0);
     (function f(t){ const k=Math.min(1,(t-start)/dur); const e=1-Math.pow(1-k,3); el.style.setProperty('--p',e); if(k<1) requestAnimationFrame(f); })(start);
   }
-  function setActive(i){
-    if(i===active) return; active=i;
-    items.forEach((li,j)=>li.classList.toggle('on',j===i));
-    bigs.forEach((b,j)=>b.classList.toggle('on',j===i));
-    cap.textContent = SERVICES[i].t;
-    wash(bigs[i], 1400);
-  }
-  items.forEach((li,i)=>{ li.addEventListener('mouseenter',()=>setActive(i)); li.addEventListener('focusin',()=>setActive(i)); });
-  setActive(0); active=0;
-  // desktop: scroll position picks the row; mobile: each mini photo washes when it enters view
-  const desk = matchMedia('(min-width: 901px)');
+  const cards = document.getElementById('svcCards');
+  cards.innerHTML = SERVICES.map(s=>`<article class="card">${phHTML(s,1100)}<h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
   if('IntersectionObserver' in window){
-    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting && desk.matches){ setActive(+e.target.dataset.i); } }),{rootMargin:'-45% 0px -45% 0px'});
-    items.forEach(li=>io.observe(li));
-    const mio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ wash(e.target,1600); mio.unobserve(e.target);} }),{threshold:.55});
-    items.forEach(li=>mio.observe(li.querySelector('.mini .ph')));
+    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ setTimeout(()=>wash(e.target,1800), 150); io.unobserve(e.target);} }),{threshold:.6});
+    cards.querySelectorAll('.ph').forEach(el=>io.observe(el));
     const rio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rio.unobserve(e.target);} }),{threshold:.15});
     document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
-  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); }
+  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>el.style.setProperty('--p',1)); }
 
   /* hero: washes itself once the photo has loaded */
   const hero = document.getElementById('hero'), ph = document.getElementById('heroPh');
   const pct = document.getElementById('pct'), meter = document.querySelector('.meter');
   const tagB = document.getElementById('tagB'), tagA = document.getElementById('tagA');
   let raf = null;
+  const cv = document.getElementById('wand'), cx = cv.getContext('2d');
+  let W=0, H=0, drops=[], last=0;
+  function size(){ const d=Math.min(devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); }
+  size(); addEventListener('resize', size);
+  // x of the wash edge at height y (matches the 100deg mask on the photo)
+  function edgeX(p, y){
+    const sn=Math.sin(100*Math.PI/180), cs=-Math.cos(100*Math.PI/180), L=W*sn+H*Math.abs(cs), f=p*1.4-0.12;
+    return W/2 + ((f-0.5)*L - (y-H/2)*cs)/sn;
+  }
+  function drawWand(p, t){
+    cx.clearRect(0,0,W,H);
+    const on = p>0.005 && p<0.995;
+    if(on){
+      const sweep = 0.5+0.5*Math.sin(t/260);
+      const iy = H*(0.14 + 0.36*sweep), ix = edgeX(p, iy);
+      const scale = Math.max(0.6, Math.min(1.15, W/1400));
+      const tx = ix + 150*scale, ty = iy + 105*scale;          // nozzle tip
+      const ang = Math.atan2(ty-iy, tx-ix);                      // spray direction (tip -> wall)
+      // spray fan
+      const fan = 0.3, len = Math.hypot(tx-ix, ty-iy) + 18;
+      const g = cx.createLinearGradient(tx,ty,ix,iy);
+      g.addColorStop(0,'rgba(255,255,255,.95)'); g.addColorStop(.55,'rgba(235,247,255,.55)'); g.addColorStop(1,'rgba(235,247,255,0)');
+      cx.save(); cx.shadowColor='rgba(255,255,255,.8)'; cx.shadowBlur=18; cx.translate(tx,ty); cx.rotate(ang+Math.PI);
+      cx.fillStyle=g; cx.beginPath(); cx.moveTo(0,-2*scale); cx.lineTo(len, -len*Math.tan(fan)); cx.lineTo(len, len*Math.tan(fan)); cx.lineTo(0,2*scale); cx.closePath(); cx.fill();
+      cx.strokeStyle='rgba(255,255,255,.5)'; cx.lineWidth=1;
+      for(let i=-3;i<=3;i++){ cx.beginPath(); cx.moveTo(4,0); cx.lineTo(len*0.92, len*Math.tan(fan)*i/3.4 + Math.sin(t/40+i)*3); cx.stroke(); }
+      cx.restore();
+      // lance + nozzle + trigger handle, running off toward the lower right
+      cx.save(); cx.translate(tx,ty); cx.rotate(ang);
+      const lance = 900*scale;
+      const lg = cx.createLinearGradient(0,-6*scale,0,6*scale);
+      lg.addColorStop(0,'#c9d1d8'); lg.addColorStop(.45,'#6c7780'); lg.addColorStop(1,'#2b3238');
+      cx.fillStyle=lg; cx.fillRect(18*scale,-4.5*scale,lance,9*scale);
+      cx.fillStyle='#d4a33a'; cx.fillRect(0,-7*scale,22*scale,14*scale);           // brass nozzle
+      cx.fillStyle='#111'; cx.fillRect(22*scale,-6*scale,10*scale,12*scale);
+      cx.fillStyle='#1d2329'; cx.beginPath(); cx.roundRect ? cx.roundRect(300*scale,-14*scale,120*scale,28*scale,8*scale) : cx.rect(300*scale,-14*scale,120*scale,28*scale); cx.fill();
+      cx.restore();
+      // droplets at the impact point
+      for(let i=0;i<5;i++) drops.push({x:ix+(Math.random()-.5)*30, y:iy+(Math.random()-.5)*30, vx:(Math.random()-.3)*4, vy:-Math.random()*3, life:1, r:1+Math.random()*2});
+    }
+    const dt = Math.min(2,(t-last)/16.7||1); last=t;
+    for(let i=drops.length-1;i>=0;i--){ const d=drops[i]; d.x+=d.vx*dt; d.y+=d.vy*dt; d.vy+=.25*dt; d.life-=.035*dt;
+      if(d.life<=0){ drops.splice(i,1); continue; }
+      cx.fillStyle=`rgba(255,255,255,${d.life*.8})`; cx.beginPath(); cx.arc(d.x,d.y,d.r,0,6.283); cx.fill(); }
+    if(drops.length>400) drops.splice(0,drops.length-400);
+    return on || drops.length>0;
+  }
   function render(p){
     ph.style.setProperty('--p', p); meter.style.setProperty('--p', p);
+    drawWand(p, performance.now());
     ph.style.setProperty('--sprayop', p>0.01 && p<0.99 ? 1 : 0);
     pct.textContent = Math.round(p*100)+'%';
     tagB.style.opacity = p<0.12 ? 1 : 0; tagA.style.opacity = p>0.95 ? 1 : 0;
@@ -448,8 +467,8 @@ footer a{color:#C9D4DC}
     cancelAnimationFrame(raf); hero.classList.remove('done'); render(0);
     if(reduce){ render(1); hero.classList.add('done'); return; }
     setTimeout(()=>{
-      const start=performance.now(), dur=3600;
-      (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(e); if(k<1) raf=requestAnimationFrame(f); else hero.classList.add('done'); })(start);
+      const start=performance.now(), dur=6200;
+      (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(e); if(k<1) raf=requestAnimationFrame(f); else { hero.classList.add('done'); (function settle(){ if(drawWand(1, performance.now())) raf=requestAnimationFrame(settle); })(); } })(start);
     }, delay);
   }
   const heroImg = ph.querySelector(':scope > img');
