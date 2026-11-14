@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cardinal Pressure Washing</title>
+<meta name="description" content="Cardinal Pressure Washing: exterior soft washing for commercial and residential properties in Brentwood and Nashville. Call 205.447.1820.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1B26;
+  --ink-2:#3C4B57;
+  --muted:#6B7A86;
+  --paper:#FFFFFF;
+  --mist:#EEF4F7;
+  --line:#DDE5EB;
+  --brand:#B3122E;
+  --brand-deep:#7E0C20;
+  --aqua:#FFB4B4;
+  --radius:18px;
+  --grime:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .22  0 0 0 0 .26  0 0 0 0 .12  0 0 0 -2.2 1.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --streaks:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.028 .006' numOctaves='4' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 .16  0 0 0 0 .15  0 0 0 0 .1  0 0 0 -3.4 1.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:"Schibsted Grotesk",ui-sans-serif,system-ui,sans-serif;color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--aqua);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+@media (max-width:640px){.wrap{padding:0 18px}}
+
+.notice{position:relative;z-index:30;background:var(--ink);color:#C9D4DC;font-size:13px;text-align:center;padding:8px 16px}
+.notice b{color:#fff;font-weight:600}
+
+/* ---------- photo + grime system ---------- */
+.ph{position:relative;overflow:hidden;background:#cfd8de}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph .dirty{position:absolute;inset:0;
+  -webkit-mask-image:linear-gradient(var(--dir,100deg),transparent calc(var(--p,0)*140% - 22%),#000 calc(var(--p,0)*140% - 2%));
+          mask-image:linear-gradient(var(--dir,100deg),transparent calc(var(--p,0)*140% - 22%),#000 calc(var(--p,0)*140% - 2%))}
+.ph .dirty img{filter:sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)}
+.ph .dirty::before{content:"";position:absolute;inset:0;background:var(--grime);background-size:600px;mix-blend-mode:multiply;opacity:.95}
+.ph .dirty::after{content:"";position:absolute;inset:0;background:var(--streaks);background-size:700px 1100px;mix-blend-mode:multiply;opacity:.55;-webkit-mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35));mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35))}
+.ph .spray{position:absolute;top:-10%;bottom:-10%;width:22%;left:calc(var(--p,0)*140% - 26%);pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(235,248,255,.32) 40%,rgba(235,248,255,.5) 58%,rgba(255,255,255,0));transform:skewX(-10deg);opacity:var(--sprayop,0);transition:opacity .4s}
+
+/* ---------- header ---------- */
+header.site{position:absolute;left:0;right:0;z-index:20;color:#fff}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.brand .mark{width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+.brand small{display:block;font-weight:500;font-size:13px;opacity:.75;letter-spacing:0}
+nav.links{display:flex;gap:30px;font-weight:500;font-size:15px}
+nav.links a{text-decoration:none;opacity:.88}
+nav.links a:hover{opacity:1}
+.pill{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:15px;padding:11px 18px;border-radius:999px;background:#fff;color:var(--ink)}
+.pill:hover{background:var(--mist)}
+@media (max-width:860px){nav.links{display:none}}
+@media (max-width:560px){header.site .pill{display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:#0b1620}
+.hero .stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden}
+.hero .wipe{position:absolute;top:0;bottom:0;left:0;width:calc(100% + 140px);overflow:hidden;will-change:transform;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 140px);mask-image:linear-gradient(90deg,transparent 0,#000 140px)}
+.hero .wipe-in{position:absolute;top:0;bottom:0;left:0;will-change:transform}
+.hero .wipe-in canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero .wet{position:absolute;top:0;bottom:0;left:0;width:170px;pointer-events:none;background:linear-gradient(90deg,rgba(225,242,252,0),rgba(225,242,252,.26) 50%,rgba(225,242,252,0))}
+.replay{background:none;border:0;color:rgba(255,255,255,.7);font:500 13px 'Schibsted Grotesk',sans-serif;cursor:pointer;padding:0;margin-top:10px;text-decoration:underline;text-underline-offset:3px}
+.replay:hover{color:#fff}
+.hero .ph{position:absolute;inset:0;--dir:100deg;opacity:0;transition:opacity .5s}
+.hero .ph img{object-position:center 40%}
+.hero .shade{position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(11,22,32,.55) 0%,rgba(11,22,32,0) 26%),
+  linear-gradient(0deg,rgba(11,22,32,.88) 0%,rgba(11,22,32,.35) 42%,rgba(11,22,32,0) 64%)}
+.hero .wand{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.hero .copy{position:absolute;left:0;right:0;bottom:0;color:#fff;z-index:5}
+.hero .copy .wrap{padding-bottom:56px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
+@media (max-width:860px){.hero .copy .wrap{grid-template-columns:1fr;padding-bottom:34px;gap:22px}}
+.hero h1{font-size:clamp(44px,7.2vw,104px);line-height:.96;letter-spacing:-.045em;font-weight:700;max-width:11ch}
+.hero p.lede{margin-top:20px;font-size:clamp(17px,1.5vw,20px);color:rgba(255,255,255,.84);max-width:40ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 24px;border-radius:999px;font:600 16px/1 "Schibsted Grotesk",sans-serif;text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.btn-brand{background:var(--brand);color:#fff}
+.btn-brand:hover{background:var(--brand-deep)}
+.btn-light{background:#fff;color:var(--ink)}
+.btn-light:hover{background:var(--mist)}
+.btn-ghost{border-color:rgba(255,255,255,.55);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-line{border-color:var(--ink);color:var(--ink)}
+.btn-line:hover{background:var(--ink);color:#fff}
+.meter{min-width:220px;color:rgba(255,255,255,.86);font-size:14px}
+.meter .row{display:flex;justify-content:space-between;font-weight:600}
+.meter .bar{height:3px;background:rgba(255,255,255,.22);border-radius:3px;margin-top:10px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:calc(var(--p,0)*100%);background:var(--aqua)}
+.meter small{display:block;margin-top:10px;color:rgba(255,255,255,.6)}
+@media (max-width:860px){.meter{min-width:0}}
+.tag{position:absolute;z-index:6;top:96px;font-size:13px;font-weight:600;color:#fff;background:rgba(11,22,32,.55);backdrop-filter:blur(6px);padding:6px 12px;border-radius:999px;transition:opacity .4s}
+.tag.b{left:28px}.tag.a{right:28px}
+@media (max-width:640px){.tag{top:84px}.tag.b{left:18px}.tag.a{right:18px}}
+
+/* ---------- statement ---------- */
+.statement{padding:120px 0 64px}
+.statement p.big{font-size:clamp(28px,3.6vw,50px);line-height:1.14;letter-spacing:-.03em;font-weight:500;max-width:23ch}
+.statement p.big span{color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:72px;border-top:1px solid var(--line);padding-top:28px}
+@media (max-width:860px){.facts{grid-template-columns:1fr 1fr;gap:24px}}
+.facts b{display:block;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.facts span{display:block;color:var(--muted);font-size:15px;margin-top:4px}
+@media (max-width:640px){.statement{padding:76px 0 64px}.facts{margin-top:48px}}
+
+/* ---------- steps ---------- */
+.steps{padding:0 0 110px}
+.step-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:860px){.step-list{grid-template-columns:1fr;gap:12px}}
+.step-list li{background:var(--mist);border-radius:var(--radius);padding:28px 26px 30px}
+.step-list .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:15px}
+.step-list h3{margin-top:22px;font-size:22px;letter-spacing:-.02em;font-weight:600}
+.step-list p{margin-top:6px;color:var(--ink-2)}
+@media (max-width:640px){.steps{padding:0 0 76px}}
+
+/* ---------- services ---------- */
+.services{padding:24px 0 120px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+.h2{font-size:clamp(34px,4.4vw,60px);line-height:1;letter-spacing:-.04em;font-weight:700}
+.sec-head p{color:var(--muted);max-width:36ch}
+.svc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 22px;margin-top:52px}
+@media (max-width:980px){.svc-cards{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.svc-cards{grid-template-columns:1fr;gap:30px}}
+.card .ph{aspect-ratio:4/3;border-radius:var(--radius);--dir:180deg}
+.card .wipe{position:absolute;left:0;right:0;top:0;height:calc(100% + 120px);overflow:hidden;will-change:transform;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 120px);mask-image:linear-gradient(180deg,transparent 0,#000 120px)}
+.card .wipe-in{position:absolute;left:0;right:0;top:0;will-change:transform}
+.card .wipe canvas,.ba .dirty canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card .wipe.gone{display:none}
+.card .ph > img,.ba .ph > img{opacity:0}
+.card .ph.ready > img,.ba .ph.ready > img{opacity:1}
+.ba .ph .dirty::before,.ba .ph .dirty::after{display:none}
+.card h3{margin-top:18px;font-size:22px;letter-spacing:-.02em;font-weight:600;line-height:1.2}
+.card p{margin-top:6px;color:var(--ink-2);max-width:40ch}
+
+/* ---------- before / after ---------- */
+.ba-sec{background:var(--mist);padding:120px 0}
+@media (max-width:640px){.ba-sec{padding:76px 0}}
+.ba{position:relative;margin-top:48px;aspect-ratio:16/8;border-radius:var(--radius);overflow:hidden;user-select:none;touch-action:pan-y;--x:50%}
+@media (max-width:640px){.ba{aspect-ratio:4/5}}
+.ba .ph{position:absolute;inset:0}
+.ba .ph .dirty{-webkit-mask-image:none;mask-image:none;clip-path:inset(0 calc(100% - var(--x)) 0 0)}
+.ba .line{position:absolute;top:0;bottom:0;left:var(--x);width:2px;margin-left:-1px;background:#fff;z-index:3}
+.ba .knob{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0;z-index:4}
+.ba .t{position:absolute;top:16px;z-index:3;font-size:13px;font-weight:600;color:#fff;background:rgba(11,22,32,.55);backdrop-filter:blur(6px);padding:6px 12px;border-radius:999px}
+.ba .t.l{left:16px}.ba .t.r{right:16px}
+.ba-note{margin-top:16px;color:var(--muted);font-size:14px}
+
+/* ---------- area + offer ---------- */
+.area{padding:120px 0}
+@media (max-width:640px){.area{padding:76px 0}}
+.area-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:64px;align-items:end}
+@media (max-width:900px){.area-grid{grid-template-columns:1fr;gap:40px}}
+.area h2{font-size:clamp(40px,6.4vw,92px);line-height:.95;letter-spacing:-.05em;font-weight:700}
+.area h2 span{display:block;color:var(--brand)}
+.offer{border:1px solid var(--line);border-radius:var(--radius);padding:30px}
+.offer b{display:block;font-size:44px;line-height:1;letter-spacing:-.04em;font-weight:700;color:var(--brand)}
+.offer p{margin-top:12px;color:var(--ink-2)}
+.offer .btn{margin-top:22px}
+.why{margin-top:72px;display:grid;grid-template-columns:1fr 1fr;gap:64px;border-top:1px solid var(--line);padding-top:32px}
+@media (max-width:900px){.why{grid-template-columns:1fr;gap:16px}}
+.why h3{font-size:22px;letter-spacing:-.02em;font-weight:600}
+.why p{color:var(--ink-2);max-width:56ch}
+
+/* ---------- contact ---------- */
+.contact{background:var(--ink);color:#fff;padding:120px 0}
+@media (max-width:640px){.contact{padding:76px 0}}
+.contact-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:72px;align-items:start}
+@media (max-width:900px){.contact-grid{grid-template-columns:1fr;gap:44px}}
+.contact .kick{color:#9FB3C2;font-weight:500}
+.phone{display:block;margin-top:14px;font-size:clamp(48px,7.4vw,108px);line-height:.95;letter-spacing:-.05em;font-weight:700;text-decoration:none;white-space:nowrap}
+.phone:hover{color:var(--aqua)}
+.contact p.sub{margin-top:22px;color:#B8C6D0;max-width:38ch}
+.contact .mail{color:#fff}
+form{background:#fff;color:var(--ink);border-radius:var(--radius);padding:28px;display:grid;gap:16px}
+label{display:grid;gap:7px;font-weight:600;font-size:14px}
+input,select,textarea{font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:0;border-color:transparent}
+textarea{min-height:110px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.row2{grid-template-columns:1fr}}
+form .btn{width:100%;padding:17px}
+.form-note{font-size:13px;color:var(--muted)}
+
+footer{background:var(--ink);color:#8FA3B1;border-top:1px solid rgba(255,255,255,.08);padding:28px 0 32px;font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:#C9D4DC}
+
+.callbar{display:none}
+@media (max-width:640px){
+  .callbar{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:40;gap:10px}
+  .callbar a{flex:1;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  body{padding-bottom:80px}
+}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero .ph{opacity:1}
+  .hero .wipe{display:none}
+  
+  .ph .dirty,.card .wipe{display:none}
+  .card .ph > img,.ba .ph > img{opacity:1}
+  .ba .ph .dirty{display:block}
+  .rv{opacity:1;transform:none;transition:none}
+  
+}
+</style>
+</head>
+<body>
+
+<div class="notice"><b>Mockup</b> · a free concept site made for Cardinal Pressure Washing. Not the official site.</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="mark"><svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true"><path d="M9 1c4.5 6 8 9.6 8 13.2A8 8 0 0 1 1 14.2C1 10.6 4.5 7 9 1z" fill="#B3122E"/><path d="M5.5 14.5a3.6 3.6 0 0 0 3.6 3.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>
+      <span>Cardinal<small>Pressure Washing</small></span>
+    </a>
+    <nav class="links" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#results">Results</a>
+      <a href="#area">Service area</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="pill" href="tel:+12054471820">205.447.1820</a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" id="hero" aria-label="Intro">
+  <div class="stage">
+    <div class="ph" id="heroPh">
+      <img src="https://images.unsplash.com/photo-1566071634551-224a639a1c7d?w=2200&q=80&auto=format&fit=crop"
+           srcset="https://images.unsplash.com/photo-1566071634551-224a639a1c7d?w=900&q=75&auto=format&fit=crop 900w, https://images.unsplash.com/photo-1566071634551-224a639a1c7d?w=1600&q=78&auto=format&fit=crop 1600w, https://images.unsplash.com/photo-1566071634551-224a639a1c7d?w=2400&q=80&auto=format&fit=crop 2400w"
+           sizes="100vw" alt="White siding house with a pitched roof and flowers" fetchpriority="high">
+      <div class="wipe" id="wipe"><div class="wipe-in" id="wipeIn"><canvas id="heroDirty"></canvas></div><span class="wet"></span></div>
+    </div>
+    <div class="shade"></div>
+    <canvas class="wand" id="wand" aria-hidden="true"></canvas>
+    <span class="tag b" id="tagB">Before</span>
+    <span class="tag a" id="tagA" style="opacity:0">After</span>
+    <div class="copy">
+      <div class="wrap">
+        <div>
+          <h1>Soft washing, done right.</h1>
+          <p class="lede">Exterior soft washing for homes and commercial properties in Brentwood and Nashville.</p>
+          <div class="cta">
+            <a class="btn btn-light" href="#contact">Book now</a>
+            <a class="btn btn-ghost" href="sms:+12054471820">Text us a photo</a>
+          </div>
+        </div>
+        <div class="meter" aria-hidden="true">
+          <div class="row"><span>Washing</span><span id="pct">0%</span></div>
+          <div class="bar"><i></i></div>
+          <button class="replay" id="replay" type="button">Wash it again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="statement">
+  <div class="wrap">
+    <p class="big rv">Exterior soft washing specialists. <span>For commercial and residential properties around Brentwood and Nashville.</span></p>
+    <div class="facts rv">
+      <div><b>Soft wash</b><span>specialists</span></div>
+      <div><b>Residential</b><span>homes</span></div>
+      <div><b>Commercial</b><span>properties</span></div>
+      <div><b>Brentwood</b><span>and Nashville</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="wrap">
+    <ol class="step-list rv">
+      <li><span class="n">1</span><h3>Text us a photo</h3><p>Snap the house, deck or driveway and send it to 205.447.1820.</p></li>
+      <li><span class="n">2</span><h3>Get a quote</h3><p>We look it over and send you a price.</p></li>
+      <li><span class="n">3</span><h3>Get on the schedule</h3><p>We show up, soft wash it, and leave it clean.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2 class="h2">What we wash</h2>
+      <p>Brentwood and Nashville.</p>
+    </div>
+    <div class="svc-cards" id="svcCards"></div>
+  </div>
+</section>
+
+<section class="ba-sec" id="results">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2 class="h2">Before and after</h2>
+      <p>Drag the handle. On the live site, this is one of your own jobs.</p>
+    </div>
+    <div class="ba rv" id="ba">
+      <div class="ph">
+        <img src="https://images.unsplash.com/photo-1781637202423-33ec5b47e52e?w=2000&q=80&auto=format&fit=crop" alt="Clean concrete driveway in front of a white garage door" loading="lazy">
+        <div class="dirty"><canvas id="baDirty"></canvas></div>
+      </div>
+      <span class="t l">Before</span><span class="t r">After</span>
+      <div class="line"><div class="knob"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F1B26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></div></div>
+      <input type="range" min="0" max="100" value="50" aria-label="Before and after comparison">
+    </div>
+    <p class="ba-note">Example photo with simulated grime.</p>
+  </div>
+</section>
+
+<section class="area" id="area">
+  <div class="wrap">
+    <div class="area-grid">
+      <h2 class="rv">Brentwood<span>and Nashville.</span></h2>
+      <div class="offer rv">
+        <b>Commercial too</b>
+        <p>Storefronts, offices and building exteriors.</p>
+        <a class="btn btn-brand" href="tel:+12054471820">Call about a property</a>
+      </div>
+    </div>
+    <div class="why rv">
+      <h3>Why soft washing</h3>
+      <p>High pressure can chip paint, gouge wood and push water behind siding. Soft washing uses cleaners and low pressure to lift the grime safely.</p>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="rv">
+        <span class="kick">Call or text to book.</span>
+        <a class="phone" href="tel:+12054471820">205.447.1820</a>
+        <p class="sub">Send a photo of the job and the address, and we'll get back to you with a price. Or email <a class="mail" href="mailto:cardinalpressurewashing1@gmail.com">cardinalpressurewashing1@gmail.com</a>.</p>
+        <div class="cta">
+          <a class="btn btn-light" href="tel:+12054471820">Call now</a>
+          <a class="btn btn-ghost" href="sms:+12054471820">Text a photo</a>
+        </div>
+      </div>
+      <form id="est" class="rv" novalidate>
+        <div class="row2">
+          <label>Name<input type="text" name="name" autocomplete="name"></label>
+          <label>Phone<input type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label>What needs washing?
+          <select name="job"><option>House</option><option>Roof</option><option>Commercial</option><option>Driveway</option><option>Deck</option><option>Something else</option></select>
+        </label>
+        <label>Details<textarea name="details" placeholder="Neighborhood, size, anything we should know"></textarea></label>
+        <button class="btn btn-brand" type="submit">Send my request</button>
+        <p class="form-note" id="note">Sends straight to Cardinal by text or email.</p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Cardinal Pressure Washing, Brentwood and Nashville, TN.</span>
+    <span>Photos: <a href="https://unsplash.com" rel="noopener">Unsplash</a></span>
+  </div>
+</footer>
+
+<div class="callbar">
+  <a class="btn btn-brand" href="tel:+12054471820">Call</a>
+  <a class="btn btn-light" style="border-color:var(--ink)" href="sms:+12054471820">Text</a>
+</div>
+
+<script>
+(function(){
+  const img = (id, w) => `https://images.unsplash.com/${id}?w=${w}&q=78&auto=format&fit=crop`;
+  const SERVICES = [
+    {"t": "House washing", "d": "Siding and trim soft washed clean.", "id": "photo-1787094497609-5efe6029b950"},
+    {"t": "Roofs", "d": "Streaks lifted without blasting shingles.", "id": "photo-1590365876016-da05ac533e83"},
+    {"t": "Commercial", "d": "Storefronts and building exteriors.", "id": "photo-1677956787377-a0f32c0974af"},
+    {"t": "Driveways", "d": "Concrete brought back to bright.", "id": "photo-1783125127341-81112b795c23"},
+    {"t": "Decks", "d": "Weathered wood restored gently.", "id": "photo-1613544723371-23b514a78c85"},
+    {"t": "Mold & algae", "d": "Green growth treated at the source.", "id": "photo-1792628953670-e9e307fa546d"}
+  ];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // turn the SVG noise textures into plain bitmaps once (SVG filters are expensive to repaint while scrolling)
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim().replace(/^url\(["']?/,'').replace(/["']?\)$/,'');
+  function toBitmap(src, w, h){ return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(im,0,0,w,h); try{ res({canvas:c,url:c.toDataURL('image/png')}); }catch(e){ res({canvas:c,url:null}); } }; im.onerror=()=>res(null); im.src=src; }); }
+  const texReady = Promise.all([toBitmap(cssVar('--grime'),600,600), toBitmap(cssVar('--streaks'),700,1100)]).then(([g,st])=>{
+    if(g && g.url) document.documentElement.style.setProperty('--grime',`url(${g.url})`);
+    if(st && st.url) document.documentElement.style.setProperty('--streaks',`url(${st.url})`);
+    return {g, st};
+  });
+  // paint a grimy copy of a photo into a canvas once (filters + texture), sized to the photo's own aspect
+  function bakeDirty(imgEl, canvas, t){
+    if(!imgEl.naturalWidth) return false;
+    const k=Math.min(1, 1800/imgEl.naturalWidth), w=Math.round(imgEl.naturalWidth*k), h=Math.round(imgEl.naturalHeight*k);
+    canvas.width=w; canvas.height=h; const g=canvas.getContext('2d');
+    g.filter='sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)'; g.drawImage(imgEl,0,0,w,h); g.filter='none';
+    if(t){ g.globalCompositeOperation='multiply';
+      if(t.g){ g.globalAlpha=.95; g.fillStyle=g.createPattern(t.g.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      if(t.st){ g.globalAlpha=.5; g.fillStyle=g.createPattern(t.st.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      g.globalAlpha=1; g.globalCompositeOperation='source-over'; }
+    return true;
+  }
+  const whenLoaded = im => im.complete && im.naturalWidth ? Promise.resolve() : new Promise(r=>{ im.addEventListener('load',r,{once:true}); im.addEventListener('error',r,{once:true}); });
+
+  /* services: card grid; each photo washes once (top to bottom) when it scrolls into view */
+  const cards = document.getElementById('svcCards');
+  cards.innerHTML = SERVICES.map(s=>`<article class="card"><div class="ph"><img src="${img(s.id,1100)}" alt="${s.t}"><div class="wipe"><div class="wipe-in"><canvas></canvas></div></div></div><h3>${s.t}</h3><p>${s.d}</p></article>`).join('');
+  const FV = 120;
+  function setWipe(ph, p){
+    const wipe=ph.querySelector('.wipe'), inn=ph.querySelector('.wipe-in'), h=ph.clientHeight, e=p*(h+FV)-FV;
+    inn.style.height=h+'px';
+    wipe.style.transform=`translate3d(0,${e}px,0)`; inn.style.transform=`translate3d(0,${-e}px,0)`;
+    if(p>=1) wipe.classList.add('gone');
+  }
+  cards.querySelectorAll('.ph').forEach(ph=>setWipe(ph,0));
+  function wash(ph, dur){
+    if(reduce){ setWipe(ph,1); return; }
+    const start=performance.now();
+    (function f(t){ const k=Math.min(1,(t-start)/dur), e=1-Math.pow(1-k,3); setWipe(ph,e); if(k<1) requestAnimationFrame(f); })(start);
+  }
+  const prepared = new Map();
+  function prepCard(ph){
+    if(!prepared.has(ph)){ const im=ph.querySelector(':scope > img'), cv=ph.querySelector('canvas');
+      prepared.set(ph, Promise.all([whenLoaded(im), texReady]).then(([,t])=>{ if(!bakeDirty(im,cv,t)) setWipe(ph,1); ph.classList.add('ready'); })); }
+    return prepared.get(ph);
+  }
+  cards.querySelectorAll('.ph').forEach(ph=>{ ph.querySelector(':scope > img').loading='eager'; prepCard(ph); });
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); prepCard(e.target).then(()=>setTimeout(()=>wash(e.target,1700),120)); } }),{threshold:.6});
+    cards.querySelectorAll('.ph').forEach(el=>io.observe(el));
+    const rio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rio.unobserve(e.target);} }),{threshold:.15});
+    document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
+  } else { document.querySelectorAll('.rv').forEach(el=>el.classList.add('in')); cards.querySelectorAll('.ph').forEach(el=>{ setWipe(el,1); el.classList.add('ready'); }); }
+  // before/after: grimy side painted once too
+  const baPh = document.querySelector('.ba .ph');
+  Promise.all([whenLoaded(baPh.querySelector(':scope > img')), texReady]).then(([,t])=>{ bakeDirty(baPh.querySelector(':scope > img'), document.getElementById('baDirty'), t); baPh.classList.add('ready'); });
+  addEventListener('resize', ()=>cards.querySelectorAll('.ph').forEach(ph=>{ const w=ph.querySelector('.wipe'); if(!w.classList.contains('gone')) setWipe(ph,0); }));
+
+  /* hero: washes itself once the photo has loaded */
+  const hero = document.getElementById('hero'), ph = document.getElementById('heroPh');
+  const pct = document.getElementById('pct'), meter = document.querySelector('.meter');
+  const tagB = document.getElementById('tagB'), tagA = document.getElementById('tagA');
+  let raf = null;
+  const cv = document.getElementById('wand'), cx = cv.getContext('2d');
+  let W=0, H=0, drops=[], last=0;
+  function size(force){ const nw=cv.clientWidth, nh=cv.clientHeight; if(!force && nw===W && Math.abs(nh-H)<160) return false; const d=Math.min(devicePixelRatio||1,2); W=nw; H=nh; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); return true; }
+  const wipe = document.getElementById('wipe'), wipeIn = document.getElementById('wipeIn'), F = 140;
+  function fitWipe(){ wipeIn.style.width = ph.clientWidth+'px'; }
+  size(true); fitWipe(); addEventListener('resize', ()=>{ fitWipe(); size(false); });
+  // the dirty layer slides off to the right; the wash edge is a soft vertical band
+  const edge = p => p*(W+F) - F;
+  function edgeX(p){ return edge(p) + F*0.5; }
+  function drawWand(p, t){
+    cx.clearRect(0,0,W,H);
+    const on = p>0.005 && p<0.995;
+    if(on){
+      const sweep = 0.5+0.5*Math.sin(t/260);
+      const iy = H*(0.14 + 0.36*sweep), ix = edgeX(p);
+      const scale = Math.max(0.6, Math.min(1.15, W/1400));
+      const tx = ix + 150*scale, ty = iy + 105*scale;          // nozzle tip
+      const ang = Math.atan2(ty-iy, tx-ix);                      // spray direction (tip -> wall)
+      // spray fan
+      const fan = 0.3, len = Math.hypot(tx-ix, ty-iy) + 18;
+      const g = cx.createLinearGradient(tx,ty,ix,iy);
+      g.addColorStop(0,'rgba(255,255,255,.95)'); g.addColorStop(.55,'rgba(235,247,255,.55)'); g.addColorStop(1,'rgba(235,247,255,0)');
+      cx.save(); cx.translate(tx,ty); cx.rotate(ang+Math.PI);
+      cx.fillStyle='rgba(235,247,255,.16)'; cx.beginPath(); cx.moveTo(0,-6*scale); cx.lineTo(len*1.05, -len*Math.tan(fan*1.5)); cx.lineTo(len*1.05, len*Math.tan(fan*1.5)); cx.lineTo(0,6*scale); cx.closePath(); cx.fill();
+      cx.fillStyle=g; cx.beginPath(); cx.moveTo(0,-2*scale); cx.lineTo(len, -len*Math.tan(fan)); cx.lineTo(len, len*Math.tan(fan)); cx.lineTo(0,2*scale); cx.closePath(); cx.fill();
+      cx.strokeStyle='rgba(255,255,255,.5)'; cx.lineWidth=1;
+      for(let i=-3;i<=3;i++){ cx.beginPath(); cx.moveTo(4,0); cx.lineTo(len*0.92, len*Math.tan(fan)*i/3.4 + Math.sin(t/40+i)*3); cx.stroke(); }
+      cx.restore();
+      // lance + nozzle + trigger handle, running off toward the lower right
+      cx.save(); cx.translate(tx,ty); cx.rotate(ang);
+      const lance = 900*scale;
+      const lg = cx.createLinearGradient(0,-6*scale,0,6*scale);
+      lg.addColorStop(0,'#c9d1d8'); lg.addColorStop(.45,'#6c7780'); lg.addColorStop(1,'#2b3238');
+      cx.fillStyle=lg; cx.fillRect(18*scale,-4.5*scale,lance,9*scale);
+      cx.fillStyle='#d4a33a'; cx.fillRect(0,-7*scale,22*scale,14*scale);           // brass nozzle
+      cx.fillStyle='#111'; cx.fillRect(22*scale,-6*scale,10*scale,12*scale);
+      cx.fillStyle='#1d2329'; cx.beginPath(); cx.roundRect ? cx.roundRect(300*scale,-14*scale,120*scale,28*scale,8*scale) : cx.rect(300*scale,-14*scale,120*scale,28*scale); cx.fill();
+      cx.restore();
+      // droplets at the impact point
+      for(let i=0;i<5;i++) drops.push({x:ix+(Math.random()-.5)*30, y:iy+(Math.random()-.5)*30, vx:(Math.random()-.3)*4, vy:-Math.random()*3, life:1, r:1+Math.random()*2});
+    }
+    const dt = Math.min(2,(t-last)/16.7||1); last=t;
+    for(let i=drops.length-1;i>=0;i--){ const d=drops[i]; d.x+=d.vx*dt; d.y+=d.vy*dt; d.vy+=.25*dt; d.life-=.035*dt;
+      if(d.life<=0){ drops.splice(i,1); continue; }
+      cx.fillStyle=`rgba(255,255,255,${d.life*.8})`; cx.beginPath(); cx.arc(d.x,d.y,d.r,0,6.283); cx.fill(); }
+    if(drops.length>400) drops.splice(0,drops.length-400);
+    return on || drops.length>0;
+  }
+  function render(p){
+    const e = edge(p); wipe.style.transform = `translate3d(${e}px,0,0)`; wipeIn.style.transform = `translate3d(${-e}px,0,0)`;
+    meter.style.setProperty('--p', p);
+    drawWand(p, performance.now());
+    pct.textContent = Math.round(p*100)+'%';
+    tagB.style.opacity = p<0.12 ? 1 : 0; tagA.style.opacity = p>0.95 ? 1 : 0;
+  }
+  function play(delay){
+    cancelAnimationFrame(raf); hero.classList.remove('done'); render(0); ph.style.opacity=1;
+    if(reduce){ render(1); hero.classList.add('done'); return; }
+    setTimeout(()=>{
+      const start=performance.now(), dur=6200;
+      (function f(t){ const k=Math.min(1,(t-start)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; render(e); if(k<1) raf=requestAnimationFrame(f); else { hero.classList.add('done'); (function settle(){ if(drawWand(1, performance.now())) raf=requestAnimationFrame(settle); })(); } })(start);
+    }, delay);
+  }
+  const heroImg = ph.querySelector(':scope > img'), dc = document.getElementById('heroDirty');
+  let tex = null;
+  function bakeHero(){
+    if(!heroImg.naturalWidth) return;
+    const k = Math.min(1, 2400/heroImg.naturalWidth), w = Math.round(heroImg.naturalWidth*k), h = Math.round(heroImg.naturalHeight*k);
+    dc.width=w; dc.height=h;
+    const g=dc.getContext('2d');
+    g.filter='sepia(.5) saturate(.55) brightness(.72) contrast(.92) hue-rotate(18deg)';
+    g.drawImage(heroImg,0,0,w,h); g.filter='none';
+    if(tex){
+      g.globalCompositeOperation='multiply';
+      if(tex.g){ g.globalAlpha=.95; g.fillStyle=g.createPattern(tex.g.canvas,'repeat'); g.fillRect(0,0,w,h); }
+      if(tex.st){ g.globalAlpha=.55; g.fillStyle=g.createPattern(tex.st.canvas,'repeat'); g.fillRect(0,0,w,h*.75); g.globalAlpha=.3; g.fillRect(0,h*.75,w,h*.25); }
+      g.globalAlpha=1; g.globalCompositeOperation='source-over';
+    }
+  }
+  function start(){ texReady.then(t=>{ tex=t; bakeHero(); play(500); }); }
+  if(heroImg.complete && heroImg.naturalWidth) start(); else { heroImg.addEventListener('load',start,{once:true}); heroImg.addEventListener('error',()=>render(1),{once:true}); }
+  document.getElementById('replay').addEventListener('click',()=>play(150));
+
+  /* before/after */
+  const ba=document.getElementById('ba'), r=ba.querySelector('input');
+  r.addEventListener('input',()=>ba.style.setProperty('--x',r.value+'%'));
+
+  /* working form: opens a prefilled text (phone) or email (desktop) to the business */
+  document.getElementById('est').addEventListener('submit',e=>{
+    e.preventDefault();
+    const f=e.target, v=n=>(f.elements[n].value||'').trim();
+    const msg=`Hi Cardinal, I'd like a quote.\nName: ${v('name')||'-'}\nPhone: ${v('phone')||'-'}\nJob: ${v('job')}\nDetails: ${v('details')||'-'}`;
+    const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    document.getElementById('note').textContent = mobile ? 'Opening your texts with your request filled in…' : 'Opening your email with your request filled in…';
+    location.href = mobile ? `sms:+12054471820?&body=${encodeURIComponent(msg)}` : `mailto:cardinalpressurewashing1@gmail.com?subject=${encodeURIComponent('Quote request')}&body=${encodeURIComponent(msg)}`;
+  });
+})();
+</script>
+</body>
+</html>
